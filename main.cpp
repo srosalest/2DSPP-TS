@@ -214,6 +214,7 @@ int getInstance(string filename, vector<Rectangle> &objects , int &items)
             objects.push_back(rectangle);
         }
     }
+    file.close()
     return surface_width;
 }
 
