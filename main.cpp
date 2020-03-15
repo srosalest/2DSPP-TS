@@ -214,7 +214,6 @@ int getInstance(string filename, vector<Rectangle> &objects , int &items)
             objects.push_back(rectangle);
         }
     }
-    file.close();
     return surface_width;
 }
 
@@ -259,7 +258,7 @@ int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial
     {   
         int best_neighbor_value = numeric_limits<int>::max();   //sv.
         vector<Rectangle> best_neighbor_object; //sv.
-        int best_iterator;
+        int best_iterator = 0;
 
         for(int iterator = 1; iterator < int(candidate_object.size()); iterator++)
         {   
@@ -286,12 +285,28 @@ int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial
 
                 evaluation = BLF(surface_width, aux);
 
-                //select the non-tabu best neighbor.
-                if(evaluation < best_neighbor_value)
-                {   
-                    best_neighbor_value = evaluation;
-                    best_neighbor_object = aux;
-                    best_iterator = iterator;
+                if(best_neighbor_value == numeric_limits<int>::max())   //inside first iteration
+                {
+                    //select the non-tabu best neighbor.
+                    if(evaluation < best_neighbor_value)
+                    {   
+                        best_neighbor_value = evaluation;
+                        best_neighbor_object = aux;
+                        best_iterator = iterator;
+                    }
+                }
+                else //best neighbor has already been initialized
+                {
+                    int evaluation_unused = unusedSpace(evaluation, surface_width, candidate_object);
+                    int bestneightbor_unused = unusedSpace(best_neighbor_value, surface_width, best_neighbor_object);
+
+                    //select the non-tabu best neighbor.
+                    if((evaluation == best_neighbor_value && evaluation_unused < bestneightbor_unused) || (evaluation < best_neighbor_value))
+                    {   
+                        best_neighbor_value = evaluation;
+                        best_neighbor_object = aux;
+                        best_iterator = iterator;
+                    }
                 }
             }
         }
@@ -315,7 +330,7 @@ int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial
         int candidate_unused = unusedSpace(candidate_value, surface_width, candidate_object);
         int sbest_unused = unusedSpace(sbest_value, surface_width, sbest_object);
         
-        if((candidate_value < sbest_value && candidate_unused <= sbest_unused) || (candidate_value <= sbest_value && candidate_unused < sbest_unused))
+        if((candidate_value == sbest_value && candidate_unused < sbest_unused) || (candidate_value < sbest_value))
         {
             sbest_value = candidate_value;
             sbest_object = candidate_object;
@@ -346,7 +361,7 @@ int outPut(string filename, int &object_number, int &used_height, int &surface_w
     output_filename = filename.substr(0,filename.find(delimiter));
     output_filename.append(".output");
 
-    ofstream file(output_filename);
+    ofstream file(output_filename, ofstream::out);
 
     //check if we can write the file.
     if(!file.good())
