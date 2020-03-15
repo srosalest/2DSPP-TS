@@ -13,6 +13,11 @@
 
 using namespace std; 
 
+const float tabu_lenght_multiplier = 0.8;   //tabu lenght multiplier
+const int criterion_number = 10;    //terminate search parameter
+const float rotation_prob = 0.4; //rotation probability, used as cake
+
+
 // The BLF implementation is based in:
 //------------------------------------------------------------------------------
 // C++ BLF algorithm.
@@ -232,16 +237,20 @@ int unusedSpace(int &used_height, int &surface_width, vector<Rectangle> &solutio
     return unused_space;
 }
 
+//bool comparator(Rectangle a, Rectangle b)
+//{
+//    return a.getID() < b.getID();
+//}
+
 int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial_solution, vector<Rectangle> &best_solution)
 {
     //tabu search init.
     bool terminate = false; // flag for the stop criterion.
     int criterion = 0;    //stop criterion , 10 iterations without improvement.
 
-    float rotation = 0.4; //rotation probability as cake, if random <= 2 we rotate. //WE NEED TO SET THIS PARAMETER
-    srand(time(NULL)); //seed for the random rotation.
+    srand(time(NULL)); //seed for the random rotation.; 
 
-    int tabu_length = 1*object_number; //tabu list lenght. //WE NEED TO SET THIS PARAMETER
+    int tabu_length = tabu_lenght_multiplier*object_number; //tabu list lenght. //WE NEED TO SET THIS PARAMETER
     deque<int> tabu = deque<int>(); // empty tabu list.
 
     int candidate_value = BLF(surface_width, initial_solution); //initial solution as candidate solution.
@@ -260,7 +269,7 @@ int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial
         for(int iterator = 1; iterator < int(candidate_object.size()); iterator++)
         {   
             //randon rotation.
-            if((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) <= rotation )    //rotate
+            if((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) <= rotation_prob )    //rotate
             {
                 candidate_object[int(static_cast <float> (rand()) / static_cast <float> (RAND_MAX/(object_number-1)))].rotate();
             }
@@ -341,7 +350,7 @@ int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial
         }
 
         //check stop criterion.
-        if(criterion > 10)
+        if(criterion > criterion_number)
         {
             terminate = true;
         }
@@ -367,6 +376,8 @@ int outPut(string filename, int &object_number, int &used_height, int &surface_w
         return -1;
     }
 
+    //sort(solution.begin(), solution.end(), &comparator);
+
     file << used_height << endl;
     file << unusedSpace(used_height, surface_width, solution) << endl;
 
@@ -377,15 +388,15 @@ int outPut(string filename, int &object_number, int &used_height, int &surface_w
         if(solution[iterator].getRotation()) rotation = 1;
         else rotation = 0;
 
-        file << solution[iterator].x << " " << solution[iterator].y << " " << rotation << endl;
+        file <<solution[iterator].getID() << " " << solution[iterator].x << " " << solution[iterator].y << " " << rotation << endl;
     }
 
     file.close();
     return 0;
 }
 
-int main(int args, char **argv){
-    
+int main(int args, char **argv)
+{    
     int surface_width;  //surface width.
     int object_number;  //number of objects
     int output_status;  //write file status.
