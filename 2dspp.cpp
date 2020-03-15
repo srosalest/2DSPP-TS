@@ -10,6 +10,7 @@
 #include <string>
 #include <deque>
 #include <random>
+#include <time.h>
 
 using namespace std; 
 
@@ -237,11 +238,6 @@ int unusedSpace(int &used_height, int &surface_width, vector<Rectangle> &solutio
     return unused_space;
 }
 
-//bool comparator(Rectangle a, Rectangle b)
-//{
-//    return a.getID() < b.getID();
-//}
-
 int tabuSearch(int &surface_width, int &object_number, vector<Rectangle> initial_solution, vector<Rectangle> &best_solution)
 {
     //tabu search init.
@@ -415,12 +411,16 @@ int main(int args, char **argv)
     }
 
     else
-    {
+    {   //clock_t t;    //measure cpu time
+        //t = clock();  //measure cpu time
         int solution_height; //solution height.
+
         vector<Rectangle> solution =  vector<Rectangle>();   //vector of objects for the solution.
         solution_height = tabuSearch(surface_width, object_number, rectangles, solution);
-        output_status = outPut(output, object_number, solution_height, surface_width, solution);
 
+        //t = clock() - t;  //measure cpu time
+        cout << float(t)<< endl;
+        output_status = outPut(output, object_number, solution_height, surface_width, solution);
         if(output_status == -1) return 1; //cant write the file.
     }
     return 0;
