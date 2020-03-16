@@ -83,4 +83,4 @@ El formato es el siguiente, primero se entrega la altura utilizada, segundo se e
 ~~~
 
 
-**IMPORTANTE:**  Se deben mantener las carpetas 2dsp y output.
+**IMPORTANTE:**  Se deben mantener las carpetas 2dsp y output. Para eliminar el ejecutable utilizar make clean.
