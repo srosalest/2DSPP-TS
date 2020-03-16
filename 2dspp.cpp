@@ -419,7 +419,7 @@ int main(int args, char **argv)
         solution_height = tabuSearch(surface_width, object_number, rectangles, solution);
 
         //t = clock() - t;  //measure cpu time
-        cout << float(t)<< endl;
+        //cout << float(t)<< endl;
         output_status = outPut(output, object_number, solution_height, surface_width, solution);
         if(output_status == -1) return 1; //cant write the file.
     }
