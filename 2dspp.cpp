@@ -216,6 +216,15 @@ int getInstance(string filename, vector<Rectangle> &objects , int &items)
             objects.push_back(rectangle);
         }
     }
+    //random order
+    for(int iterator = 1; iterator < int(objects.size()); iterator++)
+    {   
+        //swap
+        if((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) < float(0.5))// swap
+        {
+            swap(objects[0],objects[iterator]);
+        }
+    }
     file.close();
     return surface_width;
 }
